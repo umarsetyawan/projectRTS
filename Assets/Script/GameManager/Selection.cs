@@ -25,9 +25,9 @@ public class Selection : MonoBehaviour
 
     public void clickSelect(GameObject unitToSelect)
     {
-        unitToSelect.GetComponent<UnitMovementScript>().enabled = false;
         deselectAll();
         unitSelected.Add(unitToSelect);
+        unitToSelect.GetComponent<UnitScript>().click();
         unitToSelect.GetComponent<UnitMovementScript>().enabled = true;
         
     }

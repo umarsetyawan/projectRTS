@@ -5,6 +5,9 @@ using UnityEngine;
 public class UnitScript : MonoBehaviour
 {
     private Selection selection;
+
+    private bool isSelected;
+
     private void Awake()
     {
         selection = FindObjectOfType<Selection>();
@@ -15,4 +18,22 @@ public class UnitScript : MonoBehaviour
     {
         selection.unitList.Remove(this.gameObject);
     }
+
+    public void click()
+    {
+        if (isSelected)
+        {
+            isSelected = false;
+        }
+        else
+        {
+            isSelected = true;
+        }
+    }
+
+    private void Update()
+    {
+
+    }
+
 }
