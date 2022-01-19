@@ -6,6 +6,7 @@ public class Selection : MonoBehaviour
     public List<GameObject> unitList = new List<GameObject>();
     public List<GameObject> unitSelected = new List<GameObject>();
 
+
     private static Selection _instance;
 
     public static Selection Instance { get { return _instance; } }
@@ -27,8 +28,7 @@ public class Selection : MonoBehaviour
     {
         deselectAll();
         unitSelected.Add(unitToSelect);
-        unitToSelect.GetComponent<UnitScript>().click();
-        unitToSelect.GetComponent<UnitMovementScript>().enabled = true;
+        unitToSelect.GetComponent<ISelectable>().Select();
         
     }
 
@@ -37,11 +37,11 @@ public class Selection : MonoBehaviour
         if (!unitSelected.Contains(unitToSelect))
         {
             unitSelected.Add(unitToSelect);
-            unitToSelect.GetComponent<UnitMovementScript>().enabled = true;
+            unitToSelect.GetComponent<ISelectable>().Select();
         }
         else
         {
-            unitToSelect.GetComponent<UnitMovementScript>().enabled = false;
+            unitToSelect.GetComponent<ISelectable>().Deselect();
             unitSelected.Remove(unitToSelect);
         }
     }
@@ -51,7 +51,7 @@ public class Selection : MonoBehaviour
         if (!unitSelected.Contains(unitToSelect))
         {
             unitSelected.Add(unitToSelect);
-            unitToSelect.GetComponent<UnitMovementScript>().enabled = true;
+            unitToSelect.GetComponent<ISelectable>().Select();
         }
     }
 
@@ -60,7 +60,7 @@ public class Selection : MonoBehaviour
     {
         foreach (var unit in unitSelected)
         {
-            unit.GetComponent<UnitMovementScript>().enabled = false;
+            unit.GetComponent<ISelectable>().Deselect();
         }
         
         unitSelected.Clear();

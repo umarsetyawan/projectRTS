@@ -1,94 +1,130 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-[RequireComponent(typeof(Rigidbody))]
+using UnityEngine.InputSystem;
+//[RequireComponent(typeof(Rigidbody))]
 
-public class BluePrint : MonoBehaviour
+public class Blueprint : MonoBehaviour
 {
-    private float colideCount;
-    private bool isRotating = false;
-   
-
     [SerializeField] private GameObject prefab;
     [SerializeField] private LayerMask ground;
-    [SerializeField] private GameObject cursor;
+    private Vector3 direction;
+    private float colideCount;
+    private Vector3 lastMousePosition;
 
-
-
+    private enum State { positioning, rotating, placement}
+    private State state;
 
 
     private void Awake()
     {
-        colideCount = 0;
-        RaycastHit hit;
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity, ground))
-        {
-            transform.position = hit.point;
-        }
     }
+
 
     private void Update()
     {
+        switch (state)
+        {
+            case State.positioning:
+                if (Mouse.current.leftButton.isPressed)
+                {
+                    if (lastMousePosition != Input.mousePosition)
+                        state = State.rotating;
+                }
+                if (Input.GetMouseButtonUp(0))
+                {
+                    state = State.placement;
+                }
+                transform.position = GetMousePos();
+                lastMousePosition = Input.mousePosition;
+                break;
+            case State.rotating:
+                if (Input.GetMouseButton(0))
+                    SetDirection();
+                if (Input.GetMouseButtonUp(0))
+                    state = State.placement;
+                break;
+            case State.placement:
+                if (colideCount > 0)
+                {
+                    Debug.Log("Colliding");
+                    state = State.positioning;
+                }
+                else 
+                {
+                    prefab.GetComponent<StorageBuilding>().Build(transform.position, transform.rotation);
+                    colideCount = 0;
+                    state = State.positioning;
+                    GameObject.Destroy(this.gameObject);
+                    Camera.main.GetComponent<DragSelect>().enabled = true;
+                }
+                break;
+            default:
+                break;
+        }
+    }
 
-        
-
+    private Vector3 GetMousePos()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
         RaycastHit hit;
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity, ground))
+        Physics.Raycast(ray, out hit, Mathf.Infinity, ground);
+        return hit.point;
+    }
+
+    private void SetDirection()
+    {
+        #region determine mouse position
+        Vector3 _dir = Vector3.zero;
+        direction = GetMousePos() - transform.position;
+        _dir = direction.normalized;
+
+        if (_dir.x <= -0.5)
         {
-            if (isRotating)
-            {
-                cursor.transform.position = hit.point;
-            }
-            else
-            {
-                transform.position = hit.point;
-            }
-            
+            Debug.Log("Left");
+            Quaternion yawRotation = Quaternion.AngleAxis(-90f, Vector3.up);
+            transform.rotation = yawRotation;
         }
-
-
-
-
-        if (Input.GetMouseButtonDown(0))
+        if (_dir.x >= 0.5)
         {
-            isRotating = true;
-            Instantiate(cursor, transform.position, transform.rotation);
+            Debug.Log("Right");
+            Quaternion yawRotation = Quaternion.AngleAxis(90f, Vector3.up);
+            transform.rotation = yawRotation;
+        }
+        if (_dir.z <= -0.5)
+        {
+            Debug.Log("down");
+            Quaternion yawRotation = Quaternion.AngleAxis(180f, Vector3.up);
+            transform.rotation = yawRotation;
+        }
+        if (_dir.z >= 0.5)
+        {
+            Debug.Log("Up");
+            Quaternion yawRotation = Quaternion.AngleAxis(0f, Vector3.up);
+            transform.rotation = yawRotation;
+        }
+        #endregion
 
-        }
-        if (Input.GetMouseButton(0))
-        {
-            transform.transform.LookAt(new Vector3(cursor.transform.position.x, transform.position.y, cursor.transform.position.z));
-        }
-        if (Input.GetMouseButtonUp(0))
-        {
-            if (colideCount < 1)
-            {
-                Instantiate(prefab, transform.position, transform.rotation);
-                GameObject.Destroy(this.gameObject);
-            }
-            else
-            {
-                Debug.Log("Colliding");
-            }
-        }
 
     }
+
+    private void PlaceBuilding()
+    {
+        
+    }
+
 
 
 
     private void OnTriggerEnter(Collider other)
     {
         colideCount++;
-        Debug.Log(colideCount);
     }
 
 
     private void OnTriggerExit(Collider other)
     {
         colideCount--;
-        Debug.Log(colideCount);
     }
 
 
