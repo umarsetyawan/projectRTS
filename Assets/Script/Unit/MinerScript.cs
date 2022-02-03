@@ -4,146 +4,57 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.InputSystem;
 
-public class MinerScript : MonoBehaviour, IUnit, ISelectable
+public class MinerScript : MonoBehaviour, ISelectable
 {
-    private Vector3 Target;
-    
-    private bool _isSelected;
+    #region Config
     private Selection selection;
-    private Vector3 targetPile;
-    private int currentCarry;
-    private int maxCarry;
+    private bool _isSelected;
+    private Order order;
+    private BaseStateSO _CurrentState;
+    private int _Layer;
+    private Vector3 _Location;
 
-    [SerializeField] private NavMeshAgent agent;
+    [SerializeField] private float MoveSpeed;
 
+    #region public Variable
 
-    private enum State { Idle, MoveTo, Mining, DroppedOff}
-    private State state;
+    [SerializeField] public int MaxCarry;
 
-    //#region registry
-    //private void Awake()
-    //{
-    //    maxCarry = 5;
-    //    selection = FindObjectOfType<Selection>();
-    //    selection.unitList.Add(this.gameObject);
-    //}
+    public int Layer { get { return _Layer; } }
 
-    //private void OnDestroy()
-    //{
-    //    selection.unitList.Remove(this.gameObject);
-    //}
-    //#endregion
+    public Vector3 Location { get { return _Location; } }
 
-    //#region state
+    [HideInInspector] public NavMeshAgent agent;
+
+    public int CurrentCarry;
 
 
-    //private void Update()
-    //{
-    //    if (_isSelected)
-    //    {
-    //        if (Input.GetMouseButtonDown(1))
-    //        {
-    //            Debug.Log("Mouse pressed");
-    //            if (findLayer() == 10)
-    //            {
-    //                targetPile = target;
-    //                state = State.MoveToResource;
-    //            }
-    //            Moveto(target);
-    //        }
-    //    }
-    //    switch (state)
-    //    {
-    //        case State.Idle:
-
-    //            break;
-    //        case State.MoveToResource:
-
-    //            Debug.Log("Moving to Resource");
-    //            agent.isStopped = false;
-    //            if (Vector3.Distance(targetPile, transform.position) <= 5)
-    //                state = State.Mining;
-    //            else
-    //                Moveto(targetPile);
-
-    //            break;
-    //        case State.Mining:
-    //            Debug.Log("Mining");
-    //            agent.isStopped = true;
-    //            if (currentCarry >= maxCarry)
-    //                state = State.MoveToStorage;
-    //            else
-    //                currentCarry++;
-    //            break;
-    //        case State.MoveToStorage:
-    //            Debug.Log("Moving to Storage");
-    //            agent.isStopped = false;
-    //            if (Vector3.Distance(Storage.Instance.GetClosestStorage(transform.position).transform.position, transform.position) <= 5)
-    //            {
-    //                agent.isStopped = true;
-    //                if (targetPile == null)
-    //                    state = State.Idle;
-    //                else
-    //                    state = State.MoveToResource;
-    //            }
-    //            else
-    //                Moveto(Storage.Instance.GetClosestStorage(transform.position).transform.position);
-    //            break;
-    //        default:
-    //            break;
-    //    }
-    //}
-    //#endregion
-
-    //#region base
+    #region State
+    public BaseStateSO Idle;
+    public BaseStateSO MoveToResource;
+    public BaseStateSO Mining;
+    public BaseStateSO MoveToStorage;
+    public BaseStateSO FreeMove;
+    #endregion
+    #endregion
 
 
-    //public void damaged()
-    //{
-    //    throw new System.NotImplementedException();
-    //}
-
-    //public void Deselect()
-    //{
-    //    _isSelected = false;
-    //    this.GetComponent<Renderer>().material.SetColor("_Color", Color.black);
-    //}
-
-    //public void Moveto(Vector3 target)
-    //{
-    //    agent.SetDestination(target);
-    //}
-
-    //public void Select()
-    //{
-    //    _isSelected = true;
-    //    this.GetComponent<Renderer>().material.SetColor("_Color", Color.green);
-    //}
-
-    //private int findLayer()
-    //{
-    //    int layer;
-
-    //    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-    //    RaycastHit hit;
-    //    Physics.Raycast(ray, out hit, Mathf.Infinity);
-    //    target = hit.point;
-    //    layer = hit.transform.gameObject.layer;
-
-    //    return layer;
-
-    //}
-    //#endregion
-
-    public void Deselect()
+    private void Awake()
     {
-        _isSelected = false;
-        this.GetComponent<Renderer>().material.SetColor("_Color", Color.black);
+        
+        if (_CurrentState == null)
+            _CurrentState = Idle;
+        agent = GetComponent<NavMeshAgent>();
+        agent.speed = MoveSpeed;
+        order = new Order();
+        selection = FindObjectOfType<Selection>();
+        selection.unitList.Add(this.gameObject);
     }
 
-    public void Moveto(Vector3 target)
+
+    private void OnDestroy()
     {
-        agent.SetDestination(target);
+        selection.unitList.Remove(this.gameObject);
     }
 
     public void Select()
@@ -152,89 +63,58 @@ public class MinerScript : MonoBehaviour, IUnit, ISelectable
         this.GetComponent<Renderer>().material.SetColor("_Color", Color.green);
     }
 
+    public void Deselect()
+    {
+        _isSelected = false;
+        this.GetComponent<Renderer>().material.SetColor("_Color", Color.black);
+    }
+    #endregion
+
+    #region Get and Set function
+    public void SetState(BaseStateSO targetState)
+    {
+        _CurrentState.ExitState();
+        _CurrentState = targetState;
+        _CurrentState.StartState(this.gameObject);
+    }
+
+    private void GetOrder()
+    {
+        order.GetLocationAndLayer();
+        _Layer = order.Layer;
+        _Location = order.Location;
+    }
+    #endregion
+
+
     private void Update()
     {
-        switch (state)
+        
+        if (Mouse.current.rightButton.isPressed)
         {
-            case State.Idle:
-                Debug.Log("Idle");
-                if (_isSelected)
+            GetOrder();
+            if (_isSelected)
+            {
+                switch (_Layer)
                 {
-                    if (Mouse.current.rightButton.isPressed)
-                    {
-                        state = State.MoveTo;
-                    }
+                    case 7:
+                        SetState(FreeMove);
+                        break;
+                    case 10:
+                        SetState(MoveToResource);
+                        break;
+                    default:
+                        break;
                 }
-                break;
-            case State.MoveTo:
-                Debug.Log("MoveTo");
-                agent.isStopped = false;
-                if (IsDroppingOff == false)
-                {
-                    if (GetLayer() == 10)
-                    {
-                        targetPile = Target;
-                        Moveto(Target);
-                        if (Vector3.Distance(targetPile, transform.position) <= 20)
-                        {
-                            state = State.Mining;
-                        }
-                    }
-                    else
-                    {
-                        Moveto(Target);
-                        state = State.Idle;
-                    }
-                }
-                else
-                {
-                    state = State.DroppedOff;
-                }
-                break;
-            case State.Mining:
-                Debug.Log("Mining");
-                agent.isStopped = true;
-                IsDroppingOff = true;
-                state = State.Idle;
-                break;
-            case State.DroppedOff:
-                Debug.Log("Full");
-                IsDroppingOff = false;
-                state = State.MoveTo;
-                break;
-            default:
-                break;
+            }
         }
+        _CurrentState.UpdateState(Time.deltaTime);
+        Debug.Log(gameObject.name +" "+ _CurrentState.Name);
     }
 
-    private bool IsDroppingOff = false;
-    //{
-    //    get
-    //    {
-    //        bool isDroppingOff = false;
-    //        if (currentCarry >= maxCarry)
-    //        {
 
-    //        }
-    //        return isDroppingOff;
-    //    }
-    //}
+   
 
 
-    private int GetLayer()
-    {
-        int layer;
-        Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
-        RaycastHit hit;
-        Physics.Raycast(ray, out hit, Mathf.Infinity);
-        layer = hit.transform.gameObject.layer;
-        SetTarget(hit.point);
-        return layer;
-    }
-
-    private void SetTarget(Vector3 target)
-    {
-        Target = target;
-    }
 
 }

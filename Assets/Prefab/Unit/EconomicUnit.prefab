@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 123886817667359267}
   - component: {fileID: 123886817667359277}
   - component: {fileID: 1091247228741451098}
-  - component: {fileID: 3090139951713865659}
+  - component: {fileID: 6655692376939435726}
   m_Layer: 9
   m_Name: EconomicUnit
   m_TagString: Untagged
@@ -133,7 +133,7 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &3090139951713865659
+--- !u!114 &6655692376939435726
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -142,6 +142,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 123886817667359266}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 10710f58435c39c4dbab49c29572a0f3, type: 3}
+  m_Script: {fileID: 11500000, guid: 3944048c70a67cc4e9f59ef83fd3d208, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  MoveSpeed: 10
+  MaxCarry: 5
+  CurrentCarry: 0
+  Idle: {fileID: 11400000, guid: a032717bdd47dbf458e60f114a8458cf, type: 2}
+  MoveToResource: {fileID: 11400000, guid: d5d441fb998171a448ceb086a0a49a90, type: 2}
+  Mining: {fileID: 11400000, guid: d770221e7e2cc1b4b9bdbb7fd3865c5b, type: 2}
+  MoveToStorage: {fileID: 11400000, guid: fb41e1f4711d01e4eb430b5b481cc485, type: 2}
+  FreeMove: {fileID: 11400000, guid: fd8c29d9dcac1a94b9f77374ed686b66, type: 2}
+  agent: {fileID: 0}
