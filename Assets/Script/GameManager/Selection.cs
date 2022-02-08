@@ -3,15 +3,14 @@ using UnityEngine;
 
 public class Selection : MonoBehaviour
 {
-    public List<GameObject> unitList = new List<GameObject>();
+    public GameManager gameManager;
     public List<GameObject> unitSelected = new List<GameObject>();
 
-
+    #region Singleton
     private static Selection _instance;
-
     public static Selection Instance { get { return _instance; } }
 
-    private void Awake()
+    private void Init()
     {
         if (_instance != null && _instance != this)
         {
@@ -22,8 +21,15 @@ public class Selection : MonoBehaviour
             _instance = this;
         }
     }
+    #endregion
 
+    private void Awake()
+    {
+        Init();
+        gameManager = GetComponent<GameManager>();
+    }
 
+    #region Selection Function
     public void clickSelect(GameObject unitToSelect)
     {
         deselectAll();
@@ -65,5 +71,6 @@ public class Selection : MonoBehaviour
         
         unitSelected.Clear();
     }
+    #endregion
 
 }

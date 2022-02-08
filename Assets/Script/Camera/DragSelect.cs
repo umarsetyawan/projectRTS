@@ -79,7 +79,7 @@ public class DragSelect : MonoBehaviour
 
     void selectUnit()
     {
-        foreach (var unit in Selection.Instance.unitList)
+        foreach (var unit in GameManager.Instance.unitList)
         {
             if (_selectArea.Contains(camera.WorldToScreenPoint(unit.transform.position)))
                 Selection.Instance.dragSelect(unit);

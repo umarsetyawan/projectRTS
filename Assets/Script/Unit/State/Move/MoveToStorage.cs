@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "State", menuName = "State/Movement State/Move to Storage")]
-public class MoveToStorage : BaseStateSO
+//[CreateAssetMenu(fileName = "State", menuName = "State/Movement State/Move to Storage")]
+public class MoveToStorage : BaseState
 {
     private GameObject _ClosestStorage;
     private Vector3 _StorageLocation;
@@ -16,7 +16,7 @@ public class MoveToStorage : BaseStateSO
         base.StartState(Unit);
         _Unit = Unit;
         _Miner = _Unit.GetComponent<MinerScript>();
-        if (Storage.Instance.Storages.Count > 0)
+        if (GameManager.Instance.Storages.Count > 0)
         {
             _ClosestStorage = Storage.Instance.GetClosestStorage(_Miner.transform.position);
             _StorageLocation = _ClosestStorage.transform.position;
@@ -31,8 +31,9 @@ public class MoveToStorage : BaseStateSO
     {
         base.UpdateState(DeltaTime);
         _Miner.agent.SetDestination(_StorageLocation);
-        if (Vector3.Distance(_StorageLocation, _Miner.transform.position) < 10)
+        if (Vector3.Distance(_StorageLocation, _Miner.transform.position) < 5)
         {
+            GameManager.Instance.gold += _Miner.CurrentCarry;
             _Miner.CurrentCarry = 0;
             _Miner.SetState(_Miner.MoveToResource);
         }

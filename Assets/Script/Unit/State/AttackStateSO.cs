@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-[CreateAssetMenu(fileName = "State", menuName = "State/AttackState")]
-public class AttackStateSO : BaseStateSO
+//[CreateAssetMenu(fileName = "State", menuName = "State/AttackState")]
+public class AttackStateSO : BaseState
 {
     [SerializeField]private GameObject _Target;
     [SerializeField]private int _AttackDamage;

@@ -2,9 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IUnit
+public class ResourceCount : MonoBehaviour
 {
-
-    void Moveto(Vector3 target);
-   
+    
 }

@@ -50,26 +50,30 @@ public struct CombatStat
     }
 }
 
+
+
 [RequireComponent(typeof(NavMeshAgent))]
 public abstract class Unit : MonoBehaviour, ISelectable
 {
     [SerializeField] private GeneralStat mGeneralStat;
     [SerializeField] private CombatStat mCombatStat;
-
+    protected bool _isSelected;
     public GeneralStat GeneralStat { get { return mGeneralStat; }/* set { mGeneralStat = GeneralStat; }*/ }
     public CombatStat CombatStat { get { return mCombatStat; } }
-    
+
 
 
     #region Interface Implementation
 
     public void Select()
     {
+        _isSelected = true;
         this.GetComponent<Renderer>().material.SetColor("_Color", Color.green);
     }
 
     public void Deselect()
     {
+        _isSelected = false;
         this.GetComponent<Renderer>().material.SetColor("_Color", Color.black);
     }
 

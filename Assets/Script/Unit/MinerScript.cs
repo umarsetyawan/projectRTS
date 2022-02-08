@@ -4,13 +4,12 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.InputSystem;
 
-public class MinerScript : MonoBehaviour, ISelectable
+public class MinerScript : Unit, ISelectable
 {
     #region Config
-    private Selection selection;
-    private bool _isSelected;
+    private GameManager gameManager;
     private Order order;
-    private BaseStateSO _CurrentState;
+    private BaseState _CurrentState;
     private int _Layer;
     private Vector3 _Location;
 
@@ -18,7 +17,9 @@ public class MinerScript : MonoBehaviour, ISelectable
 
     #region public Variable
 
-    [SerializeField] public int MaxCarry;
+    public int MaxCarry;
+
+    public float MineTime;
 
     public int Layer { get { return _Layer; } }
 
@@ -30,48 +31,58 @@ public class MinerScript : MonoBehaviour, ISelectable
 
 
     #region State
-    public BaseStateSO Idle;
-    public BaseStateSO MoveToResource;
-    public BaseStateSO Mining;
-    public BaseStateSO MoveToStorage;
-    public BaseStateSO FreeMove;
+    [HideInInspector] public BaseState Idle;
+    [HideInInspector] public MoveToResource MoveToResource;
+    [HideInInspector] public GatheringState Mining;
+    [HideInInspector] public MoveToStorage MoveToStorage;
+    [HideInInspector] public MoveToLocation FreeMove;
     #endregion
     #endregion
 
 
     private void Awake()
     {
-        
+        StateInit();
+
         if (_CurrentState == null)
             _CurrentState = Idle;
         agent = GetComponent<NavMeshAgent>();
         agent.speed = MoveSpeed;
-        order = new Order();
-        selection = FindObjectOfType<Selection>();
-        selection.unitList.Add(this.gameObject);
+        order = FindObjectOfType<Order>();
+        gameManager = FindObjectOfType<GameManager>();
+        gameManager.unitList.Add(this.gameObject);
+    }
+
+    private void StateInit()
+    {
+        Idle = /*ScriptableObject.CreateInstance<BaseStateSO>()*/ new BaseState();
+        MoveToResource = /*ScriptableObject.CreateInstance<MoveToResourceSO>()*/new MoveToResource();
+        Mining = /*ScriptableObject.CreateInstance<GatheringStateSO>()*/new GatheringState();
+        MoveToStorage = /*ScriptableObject.CreateInstance<MoveToStorageSO>()*/new MoveToStorage();
+        FreeMove = /*ScriptableObject.CreateInstance<MoveToLocationSO>()*/new MoveToLocation();
     }
 
 
     private void OnDestroy()
     {
-        selection.unitList.Remove(this.gameObject);
+        gameManager.unitList.Remove(this.gameObject);
     }
 
-    public void Select()
-    {
-        _isSelected = true;
-        this.GetComponent<Renderer>().material.SetColor("_Color", Color.green);
-    }
+    //public void Select()
+    //{
+    //    _isSelected = true;
+    //    this.GetComponent<Renderer>().material.SetColor("_Color", Color.green);
+    //}
 
-    public void Deselect()
-    {
-        _isSelected = false;
-        this.GetComponent<Renderer>().material.SetColor("_Color", Color.black);
-    }
+    //public void Deselect()
+    //{
+    //    _isSelected = false;
+    //    this.GetComponent<Renderer>().material.SetColor("_Color", Color.black);
+    //}
     #endregion
 
     #region Get and Set function
-    public void SetState(BaseStateSO targetState)
+    public void SetState(BaseState targetState)
     {
         _CurrentState.ExitState();
         _CurrentState = targetState;
@@ -109,7 +120,6 @@ public class MinerScript : MonoBehaviour, ISelectable
             }
         }
         _CurrentState.UpdateState(Time.deltaTime);
-        Debug.Log(gameObject.name +" "+ _CurrentState.Name);
     }
 
 

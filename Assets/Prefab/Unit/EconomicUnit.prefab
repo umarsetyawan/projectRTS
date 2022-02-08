@@ -147,10 +147,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MoveSpeed: 10
   MaxCarry: 5
-  CurrentCarry: 0
-  Idle: {fileID: 11400000, guid: a032717bdd47dbf458e60f114a8458cf, type: 2}
-  MoveToResource: {fileID: 11400000, guid: d5d441fb998171a448ceb086a0a49a90, type: 2}
-  Mining: {fileID: 11400000, guid: d770221e7e2cc1b4b9bdbb7fd3865c5b, type: 2}
-  MoveToStorage: {fileID: 11400000, guid: fb41e1f4711d01e4eb430b5b481cc485, type: 2}
-  FreeMove: {fileID: 11400000, guid: fd8c29d9dcac1a94b9f77374ed686b66, type: 2}
+  MineTime: 5
   agent: {fileID: 0}
+  CurrentCarry: 0
+  Idle: {fileID: 0}
+  MoveToResource: {fileID: 0}
+  Mining: {fileID: 0}
+  MoveToStorage: {fileID: 0}
+  FreeMove: {fileID: 0}

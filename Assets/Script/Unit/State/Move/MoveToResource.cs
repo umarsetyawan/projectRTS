@@ -2,16 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
-[CreateAssetMenu(fileName = "State", menuName = "State/Movement State/Move")]
-
-public class MoveToLocation : BaseStateSO
+//[CreateAssetMenu(fileName = "State", menuName = "State/Movement State/Move to Resource")]
+public class MoveToResource : BaseState
 {
 
+    private Vector3 Destination;
 
     private GameObject _Unit;
     private MinerScript _Miner;
-    private Vector3 Destination;
 
     public override void StartState(GameObject Unit)
     {
@@ -20,18 +18,18 @@ public class MoveToLocation : BaseStateSO
         _Miner = _Unit.GetComponent<MinerScript>();
         Destination = _Miner.Location;
         _Miner.agent.isStopped = false;
-
     }
 
     public override void UpdateState(float DeltaTime)
     {
         base.UpdateState(DeltaTime);
         _Miner.agent.SetDestination(Destination);
-        if (Vector3.Distance(Destination, _Miner.transform.position) < 1)
-        {
-            _Miner.SetState(_Miner.Idle);
-        }
+            if (Vector3.Distance(Destination, _Unit.transform.position) <= 5)
+            {
+                _Miner.agent.isStopped = true;
+                _Miner.SetState(_Miner.Mining);
 
+            }
     }
 
     public override void TerminateState()
@@ -39,9 +37,9 @@ public class MoveToLocation : BaseStateSO
         base.TerminateState();
     }
 
-
     public override void ExitState()
     {
         base.ExitState();
     }
+
 }
