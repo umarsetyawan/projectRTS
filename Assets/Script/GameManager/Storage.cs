@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Storage : MonoBehaviour
 {
-    public List<GameObject> Storages = new List<GameObject>();
     private int closestIndex;
     private float minDist;
     private float dist;
@@ -30,7 +29,7 @@ public class Storage : MonoBehaviour
 
     public GameObject GetClosestStorage(Vector3 unitLocation)
     {
-        for (int i = 0; i < Storages.Count; i++)
+        for (int i = 0; i < GameManager.Instance.Storages.Count; i++)
         {
             if (dist < minDist)
             {
@@ -38,7 +37,7 @@ public class Storage : MonoBehaviour
                 minDist = dist;
             }
         }
-        return closestIndex == -1 ? null : Storages[closestIndex];
+        return closestIndex == -1 ? null : GameManager.Instance.Storages[closestIndex];
         
     }
 

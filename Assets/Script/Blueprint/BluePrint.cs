@@ -9,6 +9,7 @@ public class Blueprint : MonoBehaviour
     [SerializeField] private GameObject prefab;
     [SerializeField] private LayerMask ground;
     private Vector3 direction;
+
     private float colideCount;
     private Vector3 lastMousePosition;
 
@@ -52,7 +53,7 @@ public class Blueprint : MonoBehaviour
                 }
                 else 
                 {
-                    prefab.GetComponent<StorageBuilding>().Build(transform.position, transform.rotation);
+                    //prefab.GetComponent<StorageBuilding>().Build(transform.position, transform.rotation);
                     colideCount = 0;
                     state = State.positioning;
                     GameObject.Destroy(this.gameObject);

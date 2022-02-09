@@ -4,12 +4,11 @@ using UnityEngine;
 
 public class BuildBuilding : MonoBehaviour
 {
-    [SerializeField] private GameObject prefab;
+    [SerializeField] private BuildingsSO building;
     public void build()
     {
         Camera.main.GetComponent<DragSelect>().enabled = false;
-        Instantiate(prefab, transform.position, transform.rotation);
-
+        Instantiate(building.Prefab, transform.position, transform.rotation);
 
     }
 }

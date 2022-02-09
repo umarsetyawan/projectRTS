@@ -957,8 +957,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58f7d1f2203f5f84e8db5c598617b6d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _Ground:
+    serializedVersion: 2
+    m_Bits: 128
   unitList: []
   Storages: []
+  MousePosition: {x: 0, y: 0, z: 0}
   gold: 0
   wood: 0
 --- !u!4 &963194228 stripped
@@ -1622,7 +1626,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 402e7c6ba296af64d8846313d49f60de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefab: {fileID: 4249916175728115213, guid: 0ee231f8c90ae8748875ca96e1c5d1a0, type: 3}
+  building: {fileID: 11400000, guid: 907b5b6111f8f7449ad3ec270d68fa80, type: 2}
 --- !u!114 &1703822031
 MonoBehaviour:
   m_ObjectHideFlags: 0
