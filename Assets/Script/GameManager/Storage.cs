@@ -29,7 +29,7 @@ public class Storage : MonoBehaviour
 
     public GameObject GetClosestStorage(Vector3 unitLocation)
     {
-        for (int i = 0; i < GameManager.Instance.Storages.Count; i++)
+        for (int i = 0; i < GameManager.Instance.Buildings.Count; i++)
         {
             if (dist < minDist)
             {
@@ -37,7 +37,7 @@ public class Storage : MonoBehaviour
                 minDist = dist;
             }
         }
-        return closestIndex == -1 ? null : GameManager.Instance.Storages[closestIndex];
+        return closestIndex == -1 ? null : GameManager.Instance.Buildings[closestIndex];
         
     }
 

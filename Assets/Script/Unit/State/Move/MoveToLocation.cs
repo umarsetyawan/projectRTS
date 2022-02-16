@@ -29,6 +29,7 @@ public class MoveToLocation : BaseState
         _Miner.agent.SetDestination(Destination);
         if (Vector3.Distance(Destination, _Miner.transform.position) < 1)
         {
+            _Miner.Orders = Order.OrderType.Idle;
             _Miner.SetState(_Miner.Idle);
         }
 

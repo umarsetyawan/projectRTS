@@ -10,7 +10,9 @@ public class GameManager : MonoBehaviour
     #region public variable
 
     public List<GameObject> unitList = new List<GameObject>();
-    public List<GameObject> Storages = new List<GameObject>();
+    public List<GameObject> Buildings = new List<GameObject>();
+    public List<GameObject> BuildingUnderConstruction = new List<GameObject>();
+    public LayerMask Layer;
     public Vector3 MousePosition;
 
     #region Resource
@@ -41,17 +43,21 @@ public class GameManager : MonoBehaviour
     {
         Init();
     }
-
-    private void Update()
+    public Vector3 GroundMouseLocation()
     {
-        MousePosition = GetMousePos();
-    }
-    private Vector3 GetMousePos()
-    {
-        Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         Physics.Raycast(ray, out hit, Mathf.Infinity, _Ground);
         return hit.point;
+    }
+
+    public void GetLayerandMousePosition()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        Physics.Raycast(ray, out hit, Mathf.Infinity);
+        Layer = hit.transform.gameObject.layer;
+        MousePosition = hit.point;
     }
 
 }

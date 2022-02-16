@@ -16,13 +16,17 @@ public class MoveToStorage : BaseState
         base.StartState(Unit);
         _Unit = Unit;
         _Miner = _Unit.GetComponent<MinerScript>();
-        if (GameManager.Instance.Storages.Count > 0)
+        if (GameManager.Instance.Buildings.Count > 0)
         {
             _ClosestStorage = Storage.Instance.GetClosestStorage(_Miner.transform.position);
             _StorageLocation = _ClosestStorage.transform.position;
         }
         else
+        {
+            _Miner.Orders = Order.OrderType.Idle;
             _Miner.SetState(_Miner.Idle);
+        }
+            
         
         _Miner.agent.isStopped = false;
     }

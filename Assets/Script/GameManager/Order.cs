@@ -8,6 +8,8 @@ public class Order : MonoBehaviour
     public int Layer;
     public Vector3 Location;
 
+    public enum OrderType { Idle, Mining, Building, Moving, Attacking };
+    public OrderType TheOrder;
 
     private static Order _instance;
 
@@ -25,16 +27,24 @@ public class Order : MonoBehaviour
         }
     }
 
-    public void GetLocationAndLayer()
+    public OrderType SetOrder()
     {
-        if (Selection.Instance.unitSelected.Count > 0)
+        GameManager.Instance.GetLayerandMousePosition();
+        Layer = GameManager.Instance.Layer;
+        Location = GameManager.Instance.MousePosition;
+        if (Layer == 10)
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            Physics.Raycast(ray, out hit, Mathf.Infinity);
-            Layer = hit.transform.gameObject.layer;
-            Location = hit.point;
+            TheOrder = OrderType.Mining;
         }
+        if (Layer == 7)
+        {
+            TheOrder = OrderType.Moving;
+        }
+        if (Layer == 8)
+        {
+            TheOrder = OrderType.Building;
+        }
+        return TheOrder;
     }
 
 }

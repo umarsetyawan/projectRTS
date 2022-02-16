@@ -8,7 +8,7 @@ public class MinerScript : Unit, ISelectable
 {
     #region Config
     private GameManager gameManager;
-    private Order order;
+    private Order.OrderType _Order;
     private BaseState _CurrentState;
     private int _Layer;
     private Vector3 _Location;
@@ -22,6 +22,7 @@ public class MinerScript : Unit, ISelectable
     public float MineTime;
 
     public int Layer { get { return _Layer; } }
+    public Order.OrderType Orders { get { return _Order; } set { _Order = value; } }
 
     public Vector3 Location { get { return _Location; } }
 
@@ -31,11 +32,12 @@ public class MinerScript : Unit, ISelectable
 
 
     #region State
-    [HideInInspector] public BaseState Idle;
-    [HideInInspector] public MoveToResource MoveToResource;
-    [HideInInspector] public GatheringState Mining;
-    [HideInInspector] public MoveToStorage MoveToStorage;
-    [HideInInspector] public MoveToLocation FreeMove;
+    public BaseState Idle;
+    public MoveToResource MoveToResource;
+    public GatheringState Mining;
+    public MoveToStorage MoveToStorage;
+    public MoveToLocation FreeMove;
+    public BuildingState Build;
     #endregion
     #endregion
 
@@ -48,7 +50,6 @@ public class MinerScript : Unit, ISelectable
             _CurrentState = Idle;
         agent = GetComponent<NavMeshAgent>();
         agent.speed = MoveSpeed;
-        order = FindObjectOfType<Order>();
         gameManager = FindObjectOfType<GameManager>();
         gameManager.unitList.Add(this.gameObject);
     }
@@ -60,6 +61,7 @@ public class MinerScript : Unit, ISelectable
         Mining = /*ScriptableObject.CreateInstance<GatheringStateSO>()*/new GatheringState();
         MoveToStorage = /*ScriptableObject.CreateInstance<MoveToStorageSO>()*/new MoveToStorage();
         FreeMove = /*ScriptableObject.CreateInstance<MoveToLocationSO>()*/new MoveToLocation();
+        Build = new BuildingState();
     }
 
 
@@ -91,35 +93,54 @@ public class MinerScript : Unit, ISelectable
 
     private void GetOrder()
     {
-        order.GetLocationAndLayer();
-        _Layer = order.Layer;
-        _Location = order.Location;
+        Order.Instance.SetOrder();
+        _Order = Order.Instance.TheOrder;
+        _Layer = Order.Instance.Layer;
+        _Location = Order.Instance.Location;
     }
     #endregion
 
 
     private void Update()
     {
-        
+        Debug.Log(_CurrentState);
+        _CurrentState.UpdateState(Time.deltaTime);
         if (Mouse.current.rightButton.isPressed)
         {
-            GetOrder();
+            //GetOrder();
             if (_isSelected)
             {
-                switch (_Layer)
+                GetOrder();
+                switch (_Order)
                 {
-                    case 7:
-                        SetState(FreeMove);
+                    case Order.OrderType.Idle:
+                        SetState(Idle);
+                        _CurrentState.UpdateState(Time.deltaTime);
                         break;
-                    case 10:
+                    case Order.OrderType.Mining:
                         SetState(MoveToResource);
+                        _CurrentState.UpdateState(Time.deltaTime);
+                        break;
+                    case Order.OrderType.Building:
+                        SetState(Build);
+                        _CurrentState.UpdateState(Time.deltaTime);
+                        break;
+                    case Order.OrderType.Moving:
+                        SetState(FreeMove);
+                        _CurrentState.UpdateState(Time.deltaTime);
+                        break;
+                    case Order.OrderType.Attacking:
+                        _CurrentState.UpdateState(Time.deltaTime);
                         break;
                     default:
+                        Debug.Log("Empty");
                         break;
                 }
             }
+                
         }
-        _CurrentState.UpdateState(Time.deltaTime);
+        
+
     }
 
 

@@ -22,6 +22,7 @@ public class GatheringState : BaseState
     {
         base.UpdateState(DeltaTime);
         _CurrentTime += DeltaTime;
+        Debug.Log(_Miner.CurrentCarry);
         if (_Miner.CurrentCarry < _Miner.MaxCarry)
         {
             if (_CurrentTime >= _Miner.MineTime)
@@ -31,10 +32,7 @@ public class GatheringState : BaseState
             }
         }
         else
-        {
-            _CurrentTime = 0;
             _Miner.SetState(_Miner.MoveToStorage);
-        }
        
     }
 
